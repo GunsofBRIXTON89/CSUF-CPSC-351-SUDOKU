@@ -19,7 +19,7 @@ struct 	runner_struct {
 	};
  
 
-//The sum computed by the background threads
+//The sudoku set read by background threads
 int g_sudoku_set[MAX_ROW_LEN][MAX_COL_LEN] = { {6, 2, 4, 5, 3, 9, 1, 8, 7},
 		      		               {5, 1, 9, 7, 2, 8, 6, 3, 4},
 		      			       {8, 3, 7, 6, 1, 4, 2, 9, 5},
