@@ -53,7 +53,7 @@ int Traverse_One_Grid(int ilBound,int iuBound,int jlBound,int juBound){
 		}
 	}
 
-	if(sum == 35){return 1;}
+	if(sum == 45){return 1;}
 	
 	return 0;
 
@@ -75,7 +75,7 @@ void* CheckRows_runner(void* param){
 		for(int j=0;j < MAX_COL_LEN-1; ++j){
 			assert((g_sudoku_set[i][j] > 0) && (g_sudoku_set[i][j] <= 9));
 			sum += g_sudoku_set[i][j];
-			if((j == MAX_COL_LEN -1) && (sum == 35)){
+			if((j == MAX_COL_LEN -1) && (sum == 45)){
 				(arg_struct->case_sum)++;
 			}
 		} 
@@ -100,7 +100,7 @@ void* CheckColumns_runner(void* param){
 		for(int i=0;i < MAX_ROW_LEN-1; ++i){
 			assert((g_sudoku_set[i][j] > 0) && (g_sudoku_set[i][j] <= 9));
 			sum += g_sudoku_set[i][j];
-			if((j == MAX_COL_LEN -1) && (sum == 35)){
+			if((j == MAX_COL_LEN -1) && (sum == 45)){
 			(arg_struct -> case_sum)++;
 			}
 		}
