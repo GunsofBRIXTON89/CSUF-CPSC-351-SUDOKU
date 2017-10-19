@@ -1,14 +1,25 @@
-/* File: project_one.c
-*/
+// ============================================================================
+// file: project_one.c
+// ============================================================================
+// Programmers: Jose Ordaz (CWID:805325115) & Faraj Haddad (CWID:)
+// Date: 10/19/2017
+// Class: CPSC-351 "Operating System Concepts"
+// Time: T/TH 2:30 P.M.
+// Instructor: Dr. McCarthy, W.
+// Project: Sudoku Solution Validator
+//
+// Description: As stated in the 9th Edition Silbershatz text, Ch04, Pg 197,
+// this program consists of designing a multithreaded application that
+// determines whether a soduku solution is valid. The approch we took was to
+// create three seperate threads to cover the nine Rows, Columns, and Grids.
+//
+// HOW to Compile: gcc -Wall -std=c99 project_one.c -pthread -o project_one.exe
+// ============================================================================
 
 #include <pthread.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <iomanip>
-
-//#include <iostream>
-//using namespace std;
 
 #define MAX_ROW_LEN 9
 #define MAX_COL_LEN 9
@@ -19,7 +30,7 @@ struct 	runner_struct {
 	};
  
 
-//The sudoku set read by background threads
+//The sum computed by the background threads
 int g_sudoku_set[MAX_ROW_LEN][MAX_COL_LEN] = { {6, 2, 4, 5, 3, 9, 1, 8, 7},
 		      		               {5, 1, 9, 7, 2, 8, 6, 3, 4},
 		      			       {8, 3, 7, 6, 1, 4, 2, 9, 5},
@@ -35,26 +46,25 @@ int g_sudoku_set[MAX_ROW_LEN][MAX_COL_LEN] = { {6, 2, 4, 5, 3, 9, 1, 8, 7},
 // This funciton traverses a section of a two-dimensional global array and adds up the sum of 
 // elements within its bounds.
 // Input: 
-// 	ilBound[IN] -- lower row bound; iuBound[IN] -- upper row bound;
-//      jlBound[IN] -- lower column bound; juBound[IN] -- uppper column bound;
+// 	il[IN] -- lower row bound; iu[IN] -- upper row bound;
+//      jl[IN] -- lower column bound; ju[IN] -- uppper column bound;
 //
 // Output: Returns interger 1 if the sum of the elements traversed is 35, 0 otherwise.
 // 
 // ===========================================================================================
 
 
-int Traverse_One_Grid(int ilBound,int iuBound,int jlBound,int juBound){
+int Traverse_One_Grid(int il,int iu,int jl,int ju){
 	int sum = 0;
-	for(;ilBound <= iuBound; ++ilBound){
-		for(; jlBound <= juBound; ++jlBound){
-			assert((g_sudoku_set[ilBound][jlBound] > 0) &&
-						 (g_sudoku_set[ilBound][jlBound] <= 9));
-			sum += g_sudoku_set[ilBound][jlBound];
+	for(;il <= iu; ++il){
+		for(; jl <= ju; ++jl){
+			assert((g_sudoku_set[il][jl] > 0) &&(g_sudoku_set[il][jl] <= 9));
+			sum += g_sudoku_set[il][jl];
 		}
+		jl = jl - 3;
 	}
-
 	if(sum == 45){return 1;}
-	
+
 	return 0;
 
 } // end of Traverse_One_Grid
@@ -63,24 +73,26 @@ int Traverse_One_Grid(int ilBound,int iuBound,int jlBound,int juBound){
 
 
 // === CheckRows_runner ======================================================================
-// 
-// Inputs: param[IN/OUT] --
-//
+// Runner thread that checks each nine rows for validation.
+// Inputs: param[IN/OUT] -- param is a void pointer that is casted to a struct object 
+// 	                    containing an int member.
 // ===========================================================================================
 void* CheckRows_runner(void* param){
 	int sum;
 	struct runner_struct *arg_struct = (struct runner_struct*)param;
-	for(int i=0; i < MAX_ROW_LEN-1; ++i){
+	for(int i=0; i <= MAX_ROW_LEN -1 ; ++i){
 		sum = 0;
-		for(int j=0;j < MAX_COL_LEN-1; ++j){
+		for(int j=0;j <= MAX_COL_LEN - 1; ++j){
 			assert((g_sudoku_set[i][j] > 0) && (g_sudoku_set[i][j] <= 9));
 			sum += g_sudoku_set[i][j];
-			if((j == MAX_COL_LEN -1) && (sum == 45)){
-				(arg_struct->case_sum)++;
+			if( /*(j == MAX_COL_LEN -1) &&*/ (sum == 45) ){
+				(arg_struct -> case_sum)++;
+				printf("arg_struct -> case_sum in ROWS = %d\n",
+				                         arg_struct -> case_sum);
 			}
-		} 
-	} 
-	
+		}
+	}
+
 	pthread_exit(0);
 
  } // end of CheckRows_runner
@@ -88,24 +100,24 @@ void* CheckRows_runner(void* param){
 
 
 // === CheckColumns_runner ===================================================================
-// 
-// Inputs: param[IN/OUT] --
-//
+// Runner thread that checks each nine Columns for validation.
+// Inputs: param[IN/OUT] -- param is a void pointer that is casted to a struct object 
+// 	                    containing an int member.
 // ===========================================================================================
 void* CheckColumns_runner(void* param){
 	int sum;
 	struct runner_struct *arg_struct = (struct runner_struct*)param;
-	for(int j=0; j < MAX_COL_LEN-1; ++j){
+	for(int j=0; j <= MAX_COL_LEN - 1; ++j){
 		sum = 0;
-		for(int i=0;i < MAX_ROW_LEN-1; ++i){
+		for(int i=0;i <= MAX_ROW_LEN - 1; ++i){
 			assert((g_sudoku_set[i][j] > 0) && (g_sudoku_set[i][j] <= 9));
 			sum += g_sudoku_set[i][j];
-			if((j == MAX_COL_LEN -1) && (sum == 45)){
+			if( /*(i == MAX_ROW_LEN - 1) &&*/ (sum == 45)){
 			(arg_struct -> case_sum)++;
 			}
 		}
-	} 
-	
+	}
+
 	pthread_exit(0);
 
 } // end of CheckColumns_runner
@@ -114,9 +126,10 @@ void* CheckColumns_runner(void* param){
 
 
 // === CheckGrid_runner ======================================================================
-// 
-// Inputs: param[IN/OUT] --
-//
+// Runner thread that checks each of the nine grids for Validation. This runner calls 
+// the Traverse_One_Grid function 9 times.
+// Inputs: param[IN/OUT] -- param is a void pointer that is casted to a struct object 
+// 	                    containing an int member.
 // ===========================================================================================
 void* CheckGrid_runner(void* param){
 	int sum = 0;
@@ -131,8 +144,7 @@ void* CheckGrid_runner(void* param){
 	sum += Traverse_One_Grid(6,8,0,2); // Grid 7
 	sum += Traverse_One_Grid(6,8,3,5); // Grid 8
 	sum += Traverse_One_Grid(6,8,6,8); // Grid 9
-	
-	arg_struct -> case_sum = sum;
+	(arg_struct -> case_sum) = sum;
 	pthread_exit(0);
 
 } // end of CheckGrid_runner
@@ -149,26 +161,27 @@ int	main(){
 	pthread_t   t_ids[NUM_THREADS];
 	// Launch Threads
 	struct runner_struct arg[NUM_THREADS];
-	
-	for(int i = 0; i < NUM_THREADS - 1; ++i){
+
+	for(int i = 0; i < NUM_THREADS; ++i){
+		arg[i].case_sum = 0;
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);   // get the default attributes
-		pthread_create(&t_ids[i],&attr,function_pointers[i],&arg);   // create the thread
+		pthread_create(&t_ids[i],&attr,function_pointers[i],&arg[i]); // create the thread
 
 	}
 
 	int sum = 0; // sum of all arg->case_sums
 
 	// Wait untill each thread is done working
-	for(int i = 0; i < NUM_THREADS - 1; ++i){
+	for(int i = 0; i < NUM_THREADS; ++i){
 		pthread_join(t_ids[i],NULL);    // wait for the thread to exit
-		printf("Case_sum of thread# %d is %d \n",i+1, arg[i].case_sum);
 		sum += arg[i].case_sum;
 	}
 
 	if( sum == 27){printf("The Sudoku Set is a valid set\n");}
 	 else{ printf("The Sudoku Set is Not a valid set\n"); }
-	
+
 	return 0;
+
 
 }// end of main
