@@ -1,7 +1,7 @@
 // ============================================================================
 // file: project_one.c
 // ============================================================================
-// Programmers: Jose Ordaz (CWID:805325115) & Faraj Haddad (CWID:)
+// Programmers: Jose Ordaz (CWID:) & Faraj Haddad (CWID:)
 // Date: 10/19/2017
 // Class: CPSC-351 "Operating System Concepts"
 // Time: T/TH 2:30 P.M.
